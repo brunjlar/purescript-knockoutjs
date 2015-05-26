@@ -1,0 +1,21 @@
+{
+  "name": "purescript-knockoutjs",
+  "homepage": "https://github.com/brunjlar/purescript-knockoutjs",
+  "description": "Type declarations for knockout.js",
+  "keywords": [
+    "purescript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "bower.json",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "purescript-foreign": "~0.4.0"
+  }
+}
