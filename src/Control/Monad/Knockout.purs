@@ -1,5 +1,7 @@
 module Control.Monad.Knockout (
-    KO (..),
+    NewObservable (..),
+    WriteObservable (..),
+    ReadObservable (..),
     Observable (..),
     newObservable,
     writeObservable,
@@ -7,9 +9,14 @@ module Control.Monad.Knockout (
 ) where
 
 import Control.Monad.Eff
+import Data.Either
 import Data.Foreign
+import Data.Foreign.Class
+import Data.Maybe
 
-foreign import data KO :: !
+foreign import data NewObservable :: !
+foreign import data WriteObservable :: !
+foreign import data ReadObservable :: !
 
 foreign import data Observable :: * -> *
 
@@ -19,7 +26,7 @@ foreign import newObservable
         return ko.observable();
     }
     """
-    :: forall a eff. Eff (ko :: KO | eff) (Observable a)
+    :: forall a eff. Eff (newObservable :: NewObservable | eff) (Observable a)
     
 foreign import writeObservable
     """
@@ -31,14 +38,21 @@ foreign import writeObservable
         };
     }
     """
-    :: forall a eff. Observable a -> a -> Eff (ko :: KO | eff) Unit
+    :: forall a eff. Observable a -> a -> Eff (writeObservable :: WriteObservable | eff) Unit
     
-foreign import readObservable
+foreign import readObservableCore
     """
-    function readObservable(obs) {
+    function readObservableCore(obs) {
         return function () {
             return obs();
         };
     }
     """
-    :: forall a eff. Observable a -> Eff (ko :: KO | eff) Foreign
+    :: forall a eff. Observable a -> Eff (readObservable :: ReadObservable | eff) Foreign
+    
+readObservable :: forall a eff. (IsForeign a) => Observable a -> Eff (readObservable :: ReadObservable | eff) (Maybe a)
+readObservable obs = do
+    x' <- readObservableCore obs
+    return $ case read x' of
+        Left _  -> Nothing
+        Right x -> Just x
