@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>PureScript Knockout Test</title>
+  </head>
+  <body>
+    <h1>PureScript Knockout Test</h1>
+    <p>Value: <span data-bind="text: x"></span></p>
+    <script src="knockout-3.3.0.js"></script>
+    <script src="hello.js"></script>
+    <script>ko.applyBindings(PS.Hello.main());</script>
+  </body>
+</html>

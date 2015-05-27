@@ -2,5 +2,5 @@
 !/.gitignore
 /bower_components/
 /node_modules/
-/output/
+/html/hello.js
 /tmp/
