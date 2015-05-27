@@ -6,6 +6,7 @@ import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 import Debug.Trace
+import Global
 
 main = do
     obs <- newObservable
