@@ -16,7 +16,6 @@ import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Maybe
-import Utils
 
 foreign import data NewObservable :: !
 foreign import data WriteObservable :: !
@@ -86,3 +85,9 @@ readPureComputed comp = do
     return $ case foreignToMaybe x of
         Just y -> y
         
+eitherToMaybe :: forall a e. Either e a -> Maybe a
+eitherToMaybe (Left _)  = Nothing
+eitherToMaybe (Right x) = Just x
+
+foreignToMaybe :: forall a. (IsForeign a) => Foreign -> Maybe a
+foreignToMaybe = eitherToMaybe <<< read
