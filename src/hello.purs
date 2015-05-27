@@ -10,17 +10,12 @@ main = do
     text <- newObservable
     
     once <- pureComputed $ do
-        x <- extract text
+        x <- readObservable text
         return $ case x of
             Nothing -> 0
-            Just t  -> readFloat t
-    twice <- pureComputed $ do
-        Just once' <- extract once
-        return $ 2 * once'
-    thrice <- pureComputed $ do
-        Just once'  <- extract once
-        Just twice' <- extract twice
-        return $ once' + twice'
+            Just t  -> let y = readFloat t in if isNaN y then 0 else y
+    twice <- pureComputed $ (2 *) <$> readPureComputed once
+    thrice <- pureComputed $ (+) <$> readPureComputed once <*> readPureComputed twice
     
     return { 
         text  : text,
