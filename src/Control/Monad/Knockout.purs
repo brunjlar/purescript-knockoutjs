@@ -1,16 +1,32 @@
-module Control.Monad.Knockout where
+module Control.Monad.Knockout (
+    KO (..),
+    Observable (..),
+    newObservable,
+    writeObservable
+) where
 
 import Control.Monad.Eff
-import DOM
+
+foreign import data KO :: !
 
 foreign import data Observable :: * -> *
 
-foreign import observable
+foreign import newObservable
     """
-    function observable(value) {
-        return function () {
-            return ko.observable(value);
+    function newObservable () {
+        return ko.observable();
+    };
+    """
+    :: forall a eff. Eff (ko :: KO | eff) (Observable a)
+    
+foreign import writeObservable
+    """
+    function writeObservable (obs) {
+        return function (value) {
+            return function () {
+                obs(value);
+            };
         };
-    }
+    };
     """
-    :: forall a eff. a -> Eff (dom :: DOM | eff) (Observable a)
+    :: forall a eff. Observable a -> a -> Eff (ko :: KO | eff) Unit

@@ -15,6 +15,6 @@
     "tests"
   ],
   "dependencies": {
-    "purescript-dom": "0.1.2"
+    "purescript-foreign": "0.4.2"
   }
 }
