@@ -3,9 +3,12 @@ module Control.Monad.Knockout (
     WriteObservable (..),
     ReadObservable (..),
     Observable (..),
+    PureComputed (..),
+    Extract,
+    extract,
     newObservable,
     writeObservable,
-    readObservable
+    pureComputed
 ) where
 
 import Control.Monad.Eff
@@ -13,12 +16,17 @@ import Data.Either
 import Data.Foreign
 import Data.Foreign.Class
 import Data.Maybe
+import Utils
 
 foreign import data NewObservable :: !
 foreign import data WriteObservable :: !
 foreign import data ReadObservable :: !
 
 foreign import data Observable :: * -> *
+foreign import data PureComputed :: * -> *
+
+class Extract f a where
+    extract :: forall eff. f a -> Eff (readObservable :: ReadObservable | eff) (Maybe a)
 
 foreign import newObservable
     """
@@ -40,19 +48,41 @@ foreign import writeObservable
     """
     :: forall a eff. Observable a -> a -> Eff (writeObservable :: WriteObservable | eff) Unit
     
-foreign import readObservableCore
+foreign import readObservable
     """
-    function readObservableCore(obs) {
+    function readObservable(obs) {
         return function () {
             return obs();
         };
     }
     """
     :: forall a eff. Observable a -> Eff (readObservable :: ReadObservable | eff) Foreign
+        
+instance observableCanExtract :: (IsForeign a) => Extract Observable a where
+    extract = (<$>) foreignToMaybe <<< readObservable
+        
+foreign import pureComputed
+    """
+    function pureComputed(f) {
+        return function () {
+            return ko.pureComputed(function () {
+                return f();
+            });
+        };
+    }
+    """
+    :: forall a eff. Eff (readObservable :: ReadObservable) a -> Eff (newObservable :: NewObservable | eff) (PureComputed a)
     
-readObservable :: forall a eff. (IsForeign a) => Observable a -> Eff (readObservable :: ReadObservable | eff) (Maybe a)
-readObservable obs = do
-    x' <- readObservableCore obs
-    return $ case read x' of
-        Left _  -> Nothing
-        Right x -> Just x
+foreign import readPureComputed
+    """
+    function readPureComputed(comp) {
+        return function () {
+            return comp();
+        };
+    }
+    """
+    :: forall a eff. PureComputed a -> Eff (readObservable :: ReadObservable | eff) Foreign
+    
+instance pureComputedCanExtract :: (IsForeign a) => Extract PureComputed a where
+    extract = (<$>) foreignToMaybe <<< readPureComputed
+        
