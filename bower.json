@@ -13,10 +13,12 @@
     "bower_components",
     "node_modules",
     "example",
+    "docs",
     "output",
     "bower.json",
     "Gruntfile.js",
-    "package.json"
+    "package.json",
+    "status.md"
   ],
   "dependencies": {
     "purescript-foreign": "~0.4.2",
