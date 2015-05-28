@@ -6,13 +6,21 @@ module.exports = function(grunt) {
 
     libFiles: [
       "src/**/*.purs",
-      "bower_components/purescript-*/src/**/*.purs",
+      "bower_components/purescript-*/src/**/*.purs"
     ],
-
-    clean: ["output"],
+    clean: ["output", "example/hello.js"],
 
     pscMake: ["<%=libFiles%>"],
-    dotPsci: ["<%=libFiles%>"],
+    psc: {
+        options: {
+            modules: ["Hello"] 
+        },
+        all: {
+            src: ["<%=libFiles%>", "example/Hello.purs"],
+            dest: "example/hello.js"
+        }
+    },
+    dotPsci: ["<%=libFiles%>", "example/Hello.purs"],
     pscDocs: {
         readme: {
             src: "src/**/*.purs",
@@ -27,7 +35,7 @@ module.exports = function(grunt) {
       },
       targetName: {
         files: {
-          src: ["output/Control.Monad.Knockout/*.js"]
+          src: ["output/Control.Monad.Knockout/*.js", "example/hello.js"]
         }
       }
     }
@@ -37,6 +45,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-purescript");
   grunt.loadNpmTasks("grunt-jsvalidate");
 
-  grunt.registerTask("make", ["pscMake", "dotPsci", "pscDocs", "jsvalidate"]);
+  grunt.registerTask("make", ["clean", "pscMake", "psc", "dotPsci", "pscDocs", "jsvalidate"]);
   grunt.registerTask("default", ["make"]);
 };
