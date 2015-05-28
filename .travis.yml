@@ -14,10 +14,10 @@ install:
  - echo "$(ghc --version) [$(ghc --print-project-git-commit-id 2> /dev/null || echo '?')]"
  - travis_retry cabal update
  - cabal install purescript
- - echo "psc version: $(psc --version)"
+ - psc --version
  - npm install -g grunt-cli bower
  - npm install
  - bower install
- 
+
 script : 
  - grunt
